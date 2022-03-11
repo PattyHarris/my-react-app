@@ -1,70 +1,142 @@
-# Getting Started with Create React App
+# Notes
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+From the Educative module on React.  Note that this part of the module is available here:
+https://github.com/the-road-to-learn-react
 
-## Available Scripts
+1. Arrow functions: we refactored from the 'function' declaration to this:
+    ```
+    const List = () => {
+        return list.map( (item) => {
+            return (
+            <div key={item.objectID}> 
+            <span>
+                <a href={item.url}>{item.title}</a>
+            </span>
+            
+            <span>{item.author}</span>
+            <span>{item.num_comments}</span>
+            <span>{item.points}</span>
+            </div>
+            );
+        })
+    }
+    ```
+Since List only returns something, we can refactor again to this - notice there are no curly braces used here - also (item) could be just 'item' since there is just one input parameter:
+    ```
+    const List = () => 
+        list.map( (item) => (
+            <div key={item.objectID}> 
+            <span>
+                <a href={item.url}>{item.title}</a>
+            </span>
+            
+            <span>{item.author}</span>
+            <span>{item.num_comments}</span>
+            <span>{item.points}</span>
+            </div>
+    ) );
 
-In the project directory, you can run:
+    ```
 
-### `npm start`
+2. Good example of refactoring down to the minimal ES6 arrow function.  This bit of code is to filter the list based on the search term - using the 'filter' function:
+   ```
+   const searchedStories = stories.filter(function(story) {
+       return story.title
+       .toLowerCase()
+       .includes(searchTerm.toLowerCase());
+   })
+   ```
+   Next refactor to use a fat arrow:
+   ```
+    const searchedStories = stories.filter( (story) => {
+       return story.title
+       .toLowerCase()
+       .includes(searchTerm.toLowerCase());
+   }) 
+   ```
+   And finally, remove the 'return' since there's no other work being done:
+   ```
+    const searchedStories = stories.filter( (story) => (
+       story.title.toLowerCase().includes(searchTerm.toLowerCase());
+   ) 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+   ```
+3. Destructuring props: In the Search component, we're using props.value and props.onSearch.  This can be destructured like this:
+   ```
+    const Search = (props) => {
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+        // Destructured props - instead of props.value and props.onSearch
+        const { search, onSearch } = props;
 
-### `npm test`
+        return (
+        <div>
+            <label htmlFor='search'>Search: </label>
+            <input 
+                id="search" 
+                type = "text" 
+                value={search}
+                onChange={onSearch} />
+        </div>
+    );
+    }
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```
+   And again more precisely, destructure the props as input parameters:
+   ```
+    const Search = ({ search, onSearch }) => {
+        return (
+        ...
+    }
 
-### `npm run build`
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. useEffect: really good explanation: https://www.educative.io/module/page/wjB3xQCPvQgwjg7Vo/10370001/5432216462557184/5111428752605184
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+5. React hooks: We combined the useState and useEffect into a custom hook that, instead of being specific to search, can be used for any local data storage.  See also the link given for more reading: https://www.robinwieruch.de/react-hooks
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+6. Making the search component re-usable.  Started with this after much refactoring:
+   ```
+    const Search = ({ search, onSearch }) => {
 
-### `npm run eject`
+        // Destructured props - instead of props.value and props.onSearch
+        // const { search, onSearch } = props;
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+        // Using React fragments, there's no need for the 'return' or 'div'.
+        <>
+        <label htmlFor='search'>Search: </label>
+        <input 
+            id="search" 
+            type = "text" 
+            value={search}
+            onChange={onSearch} />
+        </>
+    }
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   From here, we ended up with a more re-usable bit of code:
+   ```
+    const InputWithLabel = ({ id, label, value, type='text', onInputChange }) => {
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+        // Destructured props - instead of props.value and props.onSearch
+        // const { search, onSearch } = props;
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+        // Using React fragments, there's no need for the 'return' or 'div'.
+        <>
+        <label htmlFor={id}>{label}</label>
+        &nbsp;
+        <input 
+            id={id} 
 
-## Learn More
+            type = {type} 
+            value={value}
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+            onChange={onInputChange} 
+        />
+        </>
+    }
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   ```
 
-### Code Splitting
+7. Interesting way of handling the "Search:" aspect of the component - accessed using the 'children' attribute available as part of HTML.   See the courses github changes: https://github.com/the-road-to-learn-react/hacker-stories/compare/hs/Reusable-React-Component...hs/React-Component-Composition?expand=1
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+8. 
