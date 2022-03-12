@@ -16,23 +16,12 @@ const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 // Note that this is OUTSIDE of the App function...
 const useSemiPersistentState = (key, initialState) => {
 
-  // Added for performance...
-  const isMounted = React.useRef(false);
-
   const [value, setValue] = React.useState(
     localStorage.getItem(key) || initialState
   );
 
   React.useEffect( () => {
-
-    if (!isMounted.current) {
-      isMounted.current = true;
-    }
-    else {
-      console.log('A');
-      localStorage.setItem(key, value);
-    }
-    
+    localStorage.setItem(key, value);
   }, [value, key]);
 
   return [value, setValue];
@@ -71,19 +60,6 @@ const storiesReducer = (state, action) => {
     default:
       throw new Error();
   }
-};
-
-// ====================================
-// Sum of comments
-// ====================================
-
-// Added to show performance and 'useMemo'
-const getSumComments = (stories) => {
-  console.log('C');
-
-  return stories.data.reduce(
-    (result, value) => result + value.num_comments, 0
-  );
 };
 
 // ====================================
@@ -130,12 +106,12 @@ const App = () => {
   }, [handleFetchStories])
 
   // 'useCallback' added for performance tweak.
-  const handleRemoveStory = React.useCallback( (item) => {
+  const handleRemoveStory = (item) => {
     dispatchStories({
       type: 'REMOVE_STORY',
       payload: item
     });
-  }, []);
+  };
 
   // Callback for the Search component - set the local storage by using 'useEffect'.
   const handleSearchInput = event => {
@@ -146,14 +122,10 @@ const App = () => {
     setURl(`${API_ENDPOINT}${searchTerm}`);
     event.preventDefault();
   };
-  
-  console.log('B:App');
-
-  const sumComments = React.useMemo( () => getSumComments(stories), [stories]);
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.headlinePrimary}>My Hacker Stories with {sumComments} comments.</h1>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
       
       <SearchForm 
         searchTerm={searchTerm}
@@ -262,20 +234,16 @@ const LabelText = ({labelText}) => (
 // ====================================
 
 // Again using destructured objects - so props becomes {list, onRemoveItem}
-// React.memo added for performance, although as indicated, does not 
-// prevent re-renders..
 
-const List = React.memo( ({list, onRemoveItem}) => 
+const List = ({list, onRemoveItem}) => 
 
-  console.log('B:List') ||
   list.map(item => (
     <Item 
       key={item.objectID} 
       item={item}
       onRemoveItem={onRemoveItem}
       />
-    ))
-);
+    ));
   
 // ====================================
 // Item
