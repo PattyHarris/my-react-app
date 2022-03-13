@@ -139,4 +139,33 @@ Since List only returns something, we can refactor again to this - notice there 
 
 7. Interesting way of handling the "Search:" aspect of the component - accessed using the 'children' attribute available as part of HTML.   See the courses github changes: https://github.com/the-road-to-learn-react/hacker-stories/compare/hs/Reusable-React-Component...hs/React-Component-Composition?expand=1
 
-8. 
+8. Typescript: Adding typescript to the problem brought out some errors not covered by the instructor:
+   1. I left in the styling using CSS modules.  This is fix (maybe) using this links: https://duncanleung.com/typescript-module-declearation-svg-img-assets/ and https://spin.atomicobject.com/2020/06/22/css-module-typescript/.  First we need to install this plugin which showed a number of deprecations:
+   ```
+   npm install typescript-plugin-css-modules --save-dev
+   ```
+   Adding an styles.d.ts file:
+   ```
+   declare module "*.module.css" {
+    const classes: { [key: string]: string };
+    export default classes;
+  }
+   ```
+   2. Secondly, Typescript didn't understand the SVG file - here another file, custom.d.ts fixed that issue:
+   ```
+   declare module "\*.svg" {
+    import React = require("react");
+    export const ReactComponent: React.SFC<React.SVGProps<SVGSVGElement>>;
+    const src: string;
+    export default src;
+  }
+   ```
+   3. The following was added to the VSCode settings.json file (first one had been added before):
+   ```
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+   ```
+9. The course doesn't seem to need to init Typescript - I needed to run "tsc init" to generate the tsconfig.json file.
+10. As part of the Typescript changes, a wrapping 'div' had to be added to the List - from the module: According to a TypeScript with React issue on GitHub: “This is because due to limitations in the compiler, function components cannot return anything other than a JSX expression or null, otherwise it complains with a cryptic error message saying that the other type is not assignable to Element.”
+11. See this github for a great Typescript cheat sheet: https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets
+12. See this link for some other fixes I needed to make to get rid of compile errors that the module didn't need to make: https://dev-yakuza.posstree.com/en/react/create-react-app/typescript/
