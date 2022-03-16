@@ -169,3 +169,4 @@ Since List only returns something, we can refactor again to this - notice there 
 10. As part of the Typescript changes, a wrapping 'div' had to be added to the List - from the module: According to a TypeScript with React issue on GitHub: “This is because due to limitations in the compiler, function components cannot return anything other than a JSX expression or null, otherwise it complains with a cryptic error message saying that the other type is not assignable to Element.”
 11. See this github for a great Typescript cheat sheet: https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets
 12. See this link for some other fixes I needed to make to get rid of compile errors that the module didn't need to make: https://dev-yakuza.posstree.com/en/react/create-react-app/typescript/
+13. See this link regarding Typescript, Jest, and axios: https://www.fullstacklabs.co/blog/testing-async-requests-from-react-hooks

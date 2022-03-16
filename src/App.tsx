@@ -351,3 +351,6 @@ const Item = ( {item, onRemoveItem} : ItemProps ) => (
 );
 
 export default App;
+
+// Exported for jest
+export { SearchForm, InputWithLabel, List, Item };
