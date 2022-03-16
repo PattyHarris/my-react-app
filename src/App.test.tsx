@@ -1,7 +1,11 @@
 import React from 'react';
 
 import renderer from 'react-test-renderer';
-import App, { Item, List, SearchForm, InputWithLabel } from './App';
+import App from './App';
+
+import InputWithLabel from './InputWithLabel';
+import List, { Item } from './List';
+import SearchForm from './SearchForm';
 
 // For App tests.
 import axios from 'axios';
