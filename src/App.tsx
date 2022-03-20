@@ -1,5 +1,7 @@
 import React from 'react';
 import axios from 'axios';
+import { orderBy } from 'lodash';
+
 import styles from './App.module.css';
 
 import List from './List';
@@ -30,27 +32,47 @@ type StoriesState = {
 
 interface StoriesFetchInitAction {
   type: 'STORIES_FETCH_INIT';
-}
+};
+
 interface StoriesFetchSuccessAction {
   type: 'STORIES_FETCH_SUCCESS';
   payload: Stories;
-}
+};
 
 interface StoriesFetchFailureAction {
   type: 'STORIES_FETCH_FAILURE';
-}
+};
 
 interface StoriesRemoveAction {
   type: 'REMOVE_STORY';
   payload: Story;
-}
+};
+
+// Here, type is the sort type (e.g. points, author, etc.)
+interface StoriesSortAction {
+  type: 'STORIES_SORT';
+  payload: {
+    type: string;
+    direction: string;
+    stories: Stories;
+  };
+};
 
 type StoriesAction =
   | StoriesFetchInitAction
   | StoriesFetchSuccessAction
   | StoriesFetchFailureAction
-  | StoriesRemoveAction;
+  | StoriesRemoveAction
+  | StoriesSortAction;
 
+// ====================================
+// Sort State
+// ====================================
+
+type SortState = {
+  type: string;
+  direction: string;
+}
 
 // ====================================
 // ====================================
@@ -81,6 +103,7 @@ const useSemiPersistentState = (
 
 // Reducer here is used in place of the useState and useEffect.
 const storiesReducer = (state: StoriesState, action: StoriesAction) => {
+
   switch (action.type) {
     
     case 'STORIES_FETCH_INIT':
@@ -108,6 +131,17 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
         data: state.data.filter( 
           story => action.payload.objectID !== story.objectID)
       };
+       case 'STORIES_SORT':
+        {
+          console.log(action);
+          return {
+            ...state,
+            data: orderBy(
+                action.payload.stories, 
+                [action.payload.type], 
+                [action.payload.direction === "asc" ? "asc" : "desc"])
+          };
+         }
     default:
       throw new Error();
   }
@@ -118,21 +152,25 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
 
 const App = () => {
 
+  //------------------------
   // Custom React hook.
   const [searchTerm, setSearchTerm] = useSemiPersistentState(
     'search',
     'React'
   );
 
+  //------------------------
   const [url, setURl] = React.useState(
     `${API_ENDPOINT}${searchTerm}`
   );
-
+  
+  //------------------------
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
     { data: [], isLoading: false, isError: false }
   );
 
+  //------------------------
   const handleFetchStories = React.useCallback( async() => {
 
     dispatchStories({type: 'STORIES_FETCH_INIT'});
@@ -151,6 +189,7 @@ const App = () => {
 
   }, [url]);
 
+  //------------------------
   // Added with the 'useCallback' for memoized callbacks.
   React.useEffect( () => {
     handleFetchStories();
@@ -164,6 +203,7 @@ const App = () => {
     });
   };
 
+  //------------------------
   // Callback for the Search component - set the local storage by using 'useEffect'.
   const handleSearchInput = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -171,6 +211,7 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
+  //------------------------
   const handleSearchSubmit = (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -178,6 +219,18 @@ const App = () => {
     event.preventDefault();
   };
 
+  //------------------------
+  const handleSortList = (
+    sort: SortState
+  ) => {
+    dispatchStories({
+      type: 'STORIES_SORT',
+      payload: {type: sort.type, direction: sort.direction, stories: stories.data}
+    });
+  };
+
+  //------------------------
+  //------------------------
   return (
     <div className={styles.container}>
       <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
@@ -192,7 +245,10 @@ const App = () => {
       {stories.isLoading ? (
         <p>Loading...</p>
       ) : (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+        <List 
+          list={stories.data} 
+          onRemoveItem={handleRemoveStory} 
+          onSortList={handleSortList} />
       )}
 
     </div>
@@ -204,5 +260,5 @@ const App = () => {
 export default App;
 
 // Exported for file restructuring.
-export type {Story, Stories};
+export type {Story, Stories, SortState};
 

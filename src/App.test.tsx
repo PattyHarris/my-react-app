@@ -25,6 +25,7 @@ describe('Item', () => {
   };
 
   const handleRemoveItem = jest.fn();
+  
   let component: any;
 
   beforeEach(() => {
@@ -85,8 +86,14 @@ describe('List', () => {
     },
   ];
   const handleRemoveItem = jest.fn();
+  const handleSortList= jest.fn();
+
   it('renders two items', async () => {
-    const component = renderer.create(<List list={list} onRemoveItem={handleRemoveItem} />);
+    const component = renderer.create(<
+        List list={list} 
+        onRemoveItem={handleRemoveItem} 
+        onSortList={handleSortList} 
+      />);
 
     const itemByType = await component.root.findAllByType(Item);
     expect(itemByType.length).toEqual(2);

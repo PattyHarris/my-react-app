@@ -170,3 +170,6 @@ Since List only returns something, we can refactor again to this - notice there 
 11. See this github for a great Typescript cheat sheet: https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets
 12. See this link for some other fixes I needed to make to get rid of compile errors that the module didn't need to make: https://dev-yakuza.posstree.com/en/react/create-react-app/typescript/
 13. See this link regarding Typescript, Jest, and axios: https://www.fullstacklabs.co/blog/testing-async-requests-from-react-hooks
+14. Adding sort:  The tricky part here was really understanding how the interfaces and types in the App interact.  Also getting the Typescript correct for function parameters and callbacks was a useful exercise.  See the github changes.  The only sort that doesn't seem to work is that for 'author'.  I'm not sure how it's sorting that column of data.
+15. Note that sortBy (as suggested by the instructor) does not have a sort direction, but orderBy does.  Also, you need to explicitly pass 'asc' or 'desc'.  Stupid.
+16. Added a dictionary in List to hold the button sort type and the direction.  This function also then calls the callback in the App where the sorting occurs.  Question is whether the state of the list belongs in List or the App.  Dunno.  Checking in at this point before I look at the solution.
