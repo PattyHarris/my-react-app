@@ -70,19 +70,6 @@ const List = ({list, onRemoveItem} : ListProps) => {
 // ====================================
 // Sort buttons
 // ====================================
-const handleSortButton = (type: string ) => {
-  console.log(sortButtonStates[type]);
-
-  let direction: string = sortButtonStates[type];
-  if (direction === "asc") {
-    direction = "desc";
-  }
-  else {
-    direction = "asc";
-  }
-
-  sortButtonStates[type] = direction;
-}
 
 const SortButtons = ( {handleSort} : SortProps ) => {
 
