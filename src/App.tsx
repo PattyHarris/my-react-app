@@ -1,6 +1,5 @@
 import React from 'react';
 import axios from 'axios';
-import { orderBy } from 'lodash';
 
 import styles from './App.module.css';
 
@@ -48,31 +47,11 @@ interface StoriesRemoveAction {
   payload: Story;
 };
 
-// Here, type is the sort type (e.g. points, author, etc.)
-interface StoriesSortAction {
-  type: 'STORIES_SORT';
-  payload: {
-    type: string;
-    direction: string;
-    stories: Stories;
-  };
-};
-
 type StoriesAction =
   | StoriesFetchInitAction
   | StoriesFetchSuccessAction
   | StoriesFetchFailureAction
-  | StoriesRemoveAction
-  | StoriesSortAction;
-
-// ====================================
-// Sort State
-// ====================================
-
-type SortState = {
-  type: string;
-  direction: string;
-}
+  | StoriesRemoveAction;
 
 // ====================================
 // ====================================
@@ -131,17 +110,6 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
         data: state.data.filter( 
           story => action.payload.objectID !== story.objectID)
       };
-       case 'STORIES_SORT':
-        {
-          console.log(action);
-          return {
-            ...state,
-            data: orderBy(
-                action.payload.stories, 
-                [action.payload.type], 
-                [action.payload.direction === "asc" ? "asc" : "desc"])
-          };
-         }
     default:
       throw new Error();
   }
@@ -220,16 +188,6 @@ const App = () => {
   };
 
   //------------------------
-  const handleSortList = (
-    sort: SortState
-  ) => {
-    dispatchStories({
-      type: 'STORIES_SORT',
-      payload: {type: sort.type, direction: sort.direction, stories: stories.data}
-    });
-  };
-
-  //------------------------
   //------------------------
   return (
     <div className={styles.container}>
@@ -247,8 +205,7 @@ const App = () => {
       ) : (
         <List 
           list={stories.data} 
-          onRemoveItem={handleRemoveStory} 
-          onSortList={handleSortList} />
+          onRemoveItem={handleRemoveStory} />
       )}
 
     </div>
@@ -260,5 +217,5 @@ const App = () => {
 export default App;
 
 // Exported for file restructuring.
-export type {Story, Stories, SortState};
+export type {Story, Stories};
 

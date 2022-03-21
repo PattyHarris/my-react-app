@@ -1,13 +1,15 @@
 import React from 'react';
-import {Story, Stories, SortState} from './App';
+import { sortBy } from 'lodash';
+
+import {Story, Stories} from './App';
 
 import { ReactComponent as Check } from './checkmark.svg';
 import styles from './App.module.css';
 
+
 type ListProps = {
   list: Stories;
   onRemoveItem: (item: Story) => void;
-  onSortList: (sort: SortState) => void;
 };
 
 type ItemProps = {
@@ -16,17 +18,22 @@ type ItemProps = {
 };
 
 type SortProps = {
-  onSortList: (sort: SortState) => void;
+  handleSort: (sortKey: string) => void;
+}
+
+// From sort exercise and using instructor's solution since going forward,
+// module assumes this solution.
+
+// I don't think this is quite right, but the best I can figure, is that I
+// needed to use an index signature?  
+
+const SORTS: { [sort: string] : any } = {
+  NONE: (list: Stories) => list,
+  TITLE: (list: Stories) => sortBy(list, 'title'),
+  AUTHOR: (list: Stories) => sortBy(list, 'author'),
+  COMMENT: (list: Stories) => sortBy(list, 'num_comments').reverse(),
+  POINT: (list: Stories) => sortBy(list, 'points').reverse(),
 };
-
-let sortButtonStates: Record<string, string> = 
-  {
-    "title": "asc",
-    "author": "asc",
-    "num_comments": "asc",
-    "points": "asc"
-  }
-
 
 // ====================================
 // List
@@ -36,10 +43,21 @@ let sortButtonStates: Record<string, string> =
 // The wrapping 'div' added to fix a type safety issue -  see README or 
 // module.
 
-const List = ({list, onRemoveItem, onSortList} : ListProps) => (
+const List = ({list, onRemoveItem} : ListProps) => {
+
+  const [sort, setSort] = React.useState('NONE');
+
+  const handleSort = (sortKey: string) => {
+    setSort(sortKey);
+  };
+
+  const sortFunction = SORTS[sort];
+  const sortedList = sortFunction(list);
+
+  return (
   <>
-  <SortButtons onSortList={onSortList} />
-  { list.map(item => (
+  <SortButtons handleSort={handleSort} />
+  { sortedList.map((item: Story) => (
     <Item 
       key={item.objectID} 
       item={item}
@@ -47,12 +65,12 @@ const List = ({list, onRemoveItem, onSortList} : ListProps) => (
       />
     ))}
     </>
-);
+)};
 
 // ====================================
 // Sort buttons
 // ====================================
-const handleSortButton = ({ onSortList } : SortProps, type: string ) => {
+const handleSortButton = (type: string ) => {
   console.log(sortButtonStates[type]);
 
   let direction: string = sortButtonStates[type];
@@ -64,10 +82,9 @@ const handleSortButton = ({ onSortList } : SortProps, type: string ) => {
   }
 
   sortButtonStates[type] = direction;
-  onSortList({type, direction});
 }
 
-const SortButtons = ( { onSortList } : SortProps ) => {
+const SortButtons = ( {handleSort} : SortProps ) => {
 
   return (
   <div>
@@ -77,7 +94,7 @@ const SortButtons = ( { onSortList } : SortProps ) => {
         <button 
           type='button' 
           className={`${styles.button} ${styles.buttonLarge}`}
-          onClick={ () => handleSortButton({onSortList}, "title")} >
+          onClick={ () => handleSort('TITLE')} >
           Title
         </button>
       </span>
@@ -86,7 +103,7 @@ const SortButtons = ( { onSortList } : SortProps ) => {
     <button 
         type='button' 
         className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSortButton({onSortList}, "author") } >
+        onClick={ () => handleSort('AUTHOR') } >
         Author
       </button>
     </span>
@@ -95,7 +112,7 @@ const SortButtons = ( { onSortList } : SortProps ) => {
     <button 
         type='button' 
         className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSortButton({onSortList}, "num_comments") } >
+        onClick={ () => handleSort('COMMENT') } >
         Comments
       </button>
     </span>
@@ -104,7 +121,7 @@ const SortButtons = ( { onSortList } : SortProps ) => {
     <button 
         type='button' 
         className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSortButton({onSortList}, "points") } >
+        onClick={ () => handleSort('POINT') } >
         Points
       </button>
     </span>
