@@ -27,12 +27,12 @@ type SortProps = {
 // I don't think this is quite right, but the best I can figure, is that I
 // needed to use an index signature?  
 
-const SORTS: { [sort: string] : any } = {
-  NONE: (list: Stories) => list,
-  TITLE: (list: Stories) => sortBy(list, 'title'),
-  AUTHOR: (list: Stories) => sortBy(list, 'author'),
-  COMMENT: (list: Stories) => sortBy(list, 'num_comments').reverse(),
-  POINT: (list: Stories) => sortBy(list, 'points').reverse(),
+const SORTS: { [sortKey: string] : Stories | any } = {
+  NONE: (list: Stories, isReverse: boolean) => list,
+  TITLE: (list: Stories, isReverse: boolean) =>  sortBy(list, 'title'),
+  AUTHOR: (list: Stories, isReverse: boolean) => sortBy(list, 'author'),
+  COMMENT: (list: Stories, isReverse: boolean) => sortBy(list, 'num_comments').reverse(),
+  POINT: (list: Stories, isReverse: boolean) => sortBy(list, 'points').reverse(),
 };
 
 // ====================================
@@ -45,18 +45,23 @@ const SORTS: { [sort: string] : any } = {
 
 const List = ({list, onRemoveItem} : ListProps) => {
 
-  const [sort, setSort] = React.useState('NONE');
+  const [sort, setSort] = React.useState({
+    sortKey: 'NONE',
+    isReverse: false,
+  })
 
   const handleSort = (sortKey: string) => {
-    setSort(sortKey);
+    const isReverse = sort.sortKey === sortKey && !sort.isReverse;
+    setSort({sortKey: sortKey, isReverse: isReverse});
   };
 
-  const sortFunction = SORTS[sort];
-  const sortedList = sortFunction(list);
+  const sortFunction = SORTS[sort.sortKey];
+  const sortedList = sort.isReverse ? sortFunction(list).reverse() 
+                                    : sortFunction(list);
 
   return (
   <>
-  <SortButtons handleSort={handleSort} />
+  <SortButtons handleSort={handleSort}/>
   { sortedList.map((item: Story) => (
     <Item 
       key={item.objectID} 
