@@ -3,8 +3,8 @@ import axios from 'axios';
 
 import styles from './App.module.css';
 
-import List from './List';
-import SearchForm from './SearchForm';
+import List from 'List';
+import SearchForm from 'SearchForm';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
