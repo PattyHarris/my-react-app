@@ -4,6 +4,9 @@ import { sortBy } from 'lodash';
 import {Story, Stories} from './App';
 
 import { ReactComponent as Check } from './checkmark.svg';
+import { ReactComponent as UpArrow } from './up-arrow.svg';
+import { ReactComponent as DownArrow } from './down-arrow.svg';
+
 import styles from './App.module.css';
 
 
@@ -19,6 +22,7 @@ type ItemProps = {
 
 type SortProps = {
   handleSort: (sortKey: string) => void;
+  isReverse: boolean;
 }
 
 // From sort exercise and using instructor's solution since going forward,
@@ -52,7 +56,10 @@ const List = ({list, onRemoveItem} : ListProps) => {
 
   const handleSort = (sortKey: string) => {
     const isReverse = sort.sortKey === sortKey && !sort.isReverse;
-    setSort({sortKey: sortKey, isReverse: isReverse});
+
+    // Since property name is the same as the variable name...
+    // setSort({sortKey: sortKey, isReverse: isReverse});
+    setSort({sortKey, isReverse});
   };
 
   const sortFunction = SORTS[sort.sortKey];
@@ -60,67 +67,103 @@ const List = ({list, onRemoveItem} : ListProps) => {
                                     : sortFunction(list);
 
   return (
-  <>
-  <SortButtons handleSort={handleSort}/>
-  { sortedList.map((item: Story) => (
-    <Item 
-      key={item.objectID} 
-      item={item}
-      onRemoveItem={onRemoveItem}
-      />
-    ))}
-    </>
+    <>
+    <SortButtons handleSort={handleSort} isReverse={sort.isReverse}/>
+    { sortedList.map((item: Story) => (
+      <Item 
+        key={item.objectID} 
+        item={item}
+        onRemoveItem={onRemoveItem}
+        />
+      ))}
+      </>
 )};
 
 // ====================================
 // Sort buttons
 // ====================================
+type buttonProp = {
+  name: string;
+  value: string;
+  width: number;
+}
 
-const SortButtons = ( {handleSort} : SortProps ) => {
+type buttonProps = Array<buttonProp>;
+
+const SortButtons = ( {handleSort, isReverse} : SortProps) => {
+  
+  // Addition of this index signature to allow for handling the current button
+  // state.
+
+  const buttonData: buttonProps = [
+    {
+      name: "Title",
+      value: "TITLE",
+      width: 40
+    },
+    {
+      name: "Author",
+      value: "AUTHOR",
+      width: 30
+    },
+    {
+      name: "Comments",
+      value: "COMMENT",
+      width: 10
+    },
+    {
+      name: "Points",
+      value: "POINT",
+      width: 10
+    }
+  ];
+
+  const [activeButton, setActiveButton] = React.useState(buttonData[0].name);
+  
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+
+    const button: HTMLButtonElement = e.currentTarget;
+    const name = button.name;
+
+    setActiveButton(name);
+    handleSort(button.value);
+  }
 
   return (
   <div>
     <div className={styles.sortButton}> 
 
-      <span style={{ width: '40%'}}>
-        <button 
-          type='button' 
-          className={`${styles.button} ${styles.buttonLarge}`}
-          onClick={ () => handleSort('TITLE')} >
-          Title
-        </button>
-      </span>
+    {
+      buttonData.map( (item: buttonProp) => {
 
-    <span style={{ width: '30%'}}>
-    <button 
-        type='button' 
-        className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSort('AUTHOR') } >
-        Author
-      </button>
-    </span>
+        let isActive = activeButton === item.name ? true : false;
 
-    <span style={{ width: '10%'}}>
-    <button 
-        type='button' 
-        className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSort('COMMENT') } >
-        Comments
-      </button>
-    </span>
-
-    <span style={{ width: '10%'}}>
-    <button 
-        type='button' 
-        className={`${styles.button} ${styles.buttonLarge}`}
-        onClick={ () => handleSort('POINT') } >
-        Points
-      </button>
-    </span>
+        return (
+          <React.Fragment key={item.value}>
+            <span style={{ width: `${item.width}%`}}>
+            
+            <button
+              className={`${styles.button} ${styles.buttonMedium}`}
+              name={item.name}
+              value={item.value}
+              onClick={handleClick}
+            >
+              {item.name}&nbsp; 
+              {
+                isActive && (isReverse ? <UpArrow height="10px" width="10px" /> : 
+                            <DownArrow height="10px" width="10px" />)
+              }
+            </button>
+           
+            </span>
+            </React.Fragment>
+        )
+      }
+    )}
 
     <span style={{ width: '10%'}}></span>
-    </div>
 
+    </div>
   </div>
 )};
 

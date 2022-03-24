@@ -55,6 +55,10 @@
   padding: 5px;
 }
 
+.buttonMedium {
+  padding: 7px;
+}
+
 .buttonLarge {
   padding: 10px;
 }
