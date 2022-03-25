@@ -131,7 +131,7 @@ const SortButtons = ( {handleSort, isReverse} : SortProps) => {
 
   return (
   <div>
-    <div className={styles.sortButton}> 
+    <div className={styles.sortButtons}> 
 
     {
       buttonData.map( (item: buttonProp) => {

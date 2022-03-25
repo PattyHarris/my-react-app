@@ -128,10 +128,11 @@ const App = () => {
   );
 
   //------------------------
-  const [url, setURl] = React.useState(
-    `${API_ENDPOINT}${searchTerm}`
+
+  const [urls, setUrls] = React.useState<Array<string>>(
+    [`${API_ENDPOINT}${searchTerm}`]
   );
-  
+
   //------------------------
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
@@ -144,7 +145,7 @@ const App = () => {
     dispatchStories({type: 'STORIES_FETCH_INIT'});
 
     try {
-    const result = await axios.get( url );
+    const result = await axios.get( urls[urls.length - 1] );
 
     dispatchStories({
       type: 'STORIES_FETCH_SUCCESS',
@@ -155,7 +156,7 @@ const App = () => {
     dispatchStories( {type: 'STORIES_FETCH_FAILURE'});
   }
 
-  }, [url]);
+  }, [urls]);
 
   //------------------------
   // Added with the 'useCallback' for memoized callbacks.
@@ -183,7 +184,10 @@ const App = () => {
   const handleSearchSubmit = (
     event: React.FormEvent<HTMLFormElement>
   ) => {
-    setURl(`${API_ENDPOINT}${searchTerm}`);
+
+    setUrls([...urls, `${API_ENDPOINT}${searchTerm}`]);
+    console.log(urls);
+
     event.preventDefault();
   };
 
@@ -195,6 +199,7 @@ const App = () => {
       
       <SearchForm 
         searchTerm={searchTerm}
+        urls={urls}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
       />

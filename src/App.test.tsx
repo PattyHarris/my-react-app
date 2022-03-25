@@ -104,6 +104,7 @@ describe('List', () => {
 describe('SearchForm', () => {
   const searchFormProps = {
     searchTerm: 'React',
+    urls: ['React'],
     onSearchInput: jest.fn(),
     onSearchSubmit: jest.fn(),
   };
