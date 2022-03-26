@@ -118,6 +118,14 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
 // ====================================
 // ====================================
 
+// Handle last 5 searches.
+const getUrl = (searchTerm: string) => {
+  return `${API_ENDPOINT}${searchTerm}`;
+}
+
+// ====================================
+// ====================================
+
 const App = () => {
 
   //------------------------
@@ -185,10 +193,19 @@ const App = () => {
     event: React.FormEvent<HTMLFormElement>
   ) => {
 
-    setUrls([...urls, `${API_ENDPOINT}${searchTerm}`]);
-    console.log(urls);
-
+    handleSearch(searchTerm);
     event.preventDefault();
+  };
+
+  //------------------------
+  const handleLastSearch = (searchTerm: string) => {
+    handleSearch(searchTerm);
+  };
+
+  //------------------------
+  const handleSearch = (searchTerm: string) => {
+    const url = getUrl(searchTerm);
+    setUrls(urls.concat(url));  
   };
 
   //------------------------
@@ -202,6 +219,7 @@ const App = () => {
         urls={urls}
         onSearchInput={handleSearchInput}
         onSearchSubmit={handleSearchSubmit}
+        onLastSearch={handleLastSearch}
       />
 
       {stories.isError && <p>Something went wrong ...</p>}

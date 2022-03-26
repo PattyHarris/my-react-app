@@ -9,11 +9,12 @@ type SearchFormProps = {
     urls: Array<string>;
     onSearchInput: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+    onLastSearch: (searchTerm: string) => void;
 };
 
 type SearchButtonsProps = {
     urls: Array<string>;
-    onSearchSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+    onLastSearch: (searchTerm: string) => void;
 };
 
 // ====================================
@@ -24,7 +25,8 @@ const SearchForm = ({
     searchTerm,
     urls,
     onSearchInput,
-    onSearchSubmit
+    onSearchSubmit,
+    onLastSearch
 } : SearchFormProps ) => {
     
     return (
@@ -49,7 +51,7 @@ const SearchForm = ({
             </button>
         </form>
         
-        <SearchButtons urls={urls} onSearchSubmit={onSearchSubmit} />
+        <SearchButtons urls={urls} onLastSearch={onLastSearch} />
         </div> 
 )};
 
@@ -100,33 +102,45 @@ const queryString = (url: string) : string => {
 //------------------------------
 const SearchButtons = ({
     urls,
-    onSearchSubmit
+    onLastSearch
     } : SearchButtonsProps ) => {
      
+    const handleClick = (
+        event: React.MouseEvent<HTMLButtonElement>
+        ) => {
+        
+        const button: HTMLButtonElement = event.currentTarget;
+        onLastSearch(button.value);
+        event.preventDefault();
+    };
+    
     return (
+
         <div className={`${styles.buttonsSearch}`}>
 
         <label className={`${styles.labelSearch}`}>Recent Searches: </label>
 
-        <form onSubmit={onSearchSubmit} className={`${styles.lastSearchesForm}`}>
             {
+            
             urls.slice(-5).map( (url: string, index: number) => {
+
+                const query: string = queryString(url);
+                
                 return (
                     index < 5 &&
-                    <React.Fragment key={index}>
+                    <React.Fragment key={index + query}>
                         <button
-                            type="submit"
-                            value={url}
-                            className={`${styles.button} ${styles.buttonSearch}`}>
-                                {queryString(url)}
-                            </button>
+                            value={query}
+                            className={`${styles.button} ${styles.buttonSearch}`}
+                            onClick={handleClick}
+                            >
+                            {query}
+                        </button>
                     </React.Fragment>
                 )
             })
             }
-        </form>
         </div>
-
 )};
 
 export default SearchForm;

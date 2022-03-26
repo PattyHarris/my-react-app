@@ -107,6 +107,7 @@ describe('SearchForm', () => {
     urls: ['React'],
     onSearchInput: jest.fn(),
     onSearchSubmit: jest.fn(),
+    onLastSearch: jest.fn()
   };
 
   let component: any;
