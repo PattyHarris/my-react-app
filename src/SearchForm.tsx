@@ -12,7 +12,7 @@ type SearchFormProps = {
     onLastSearch: (searchTerm: string) => void;
 };
 
-type SearchButtonsProps = {
+type LastSearchesProps = {
     urls: Array<string>;
     onLastSearch: (searchTerm: string) => void;
 };
@@ -51,7 +51,7 @@ const SearchForm = ({
             </button>
         </form>
         
-        <SearchButtons urls={urls} onLastSearch={onLastSearch} />
+        <LastSearches urls={urls} onLastSearch={onLastSearch} />
         </div> 
 )};
 
@@ -98,29 +98,58 @@ const queryString = (url: string) : string => {
 }
 
 //------------------------------
-// Remove duplicates from the last searches.
+// Remove duplicates from the last searches. No used since I've replaced my
+// solution with the instructor's solution.
 //------------------------------
+
+/*
 const removeDuplicates = (data: Array<string>) : Array<string> => {
     return data.filter((value, index) => data.indexOf(value) === index);
-}
+}*/
 
 //------------------------------
 // Row of buttons of the last 5 search queries.
 //------------------------------
-const SearchButtons = ({
+const LastSearches = ({
     urls,
     onLastSearch
-    } : SearchButtonsProps ) => {
+    } : LastSearchesProps ) => {
     
     // We want to show the last 5 searches, minus the current search.
     // The searches should not have any duplicates.  Question is whether when the
     // last 5 searches are all the same - e.g. seven one one one one one one...
     // do you show 'seven one' or just 'one'?  Here I've decided to show 'seven one',
     // meaning, remove the dups and then from that take the last five...
-
+    
+    /* Commenting out to use the instructor's solution
     const getLastSearches = (urls: Array<string>): Array<string> => {
         const noDuplicates = removeDuplicates(urls);
         const lastSearches =  noDuplicates.slice(-6, -1).map(queryString);
+        return lastSearches;
+    }*/
+
+    const getLastSearches = (urls: Array<string>): Array<string> => {
+        const lastSearches = 
+        urls
+            .reduce((result: Array<string>, url:string, index: number) => {
+                const searchTerm: string = queryString(url);
+
+                if (index === 0) {
+                    return result.concat(searchTerm);
+                }
+
+                const previousSearchTerm = result[result.length - 1];
+
+                if (searchTerm === previousSearchTerm) {
+                    return result;
+                } 
+                else {
+                    return result.concat(searchTerm);
+                }
+        }, [])
+        .slice(-6)
+        .slice(0, -1);
+
         return lastSearches;
     }
     

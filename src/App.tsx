@@ -185,7 +185,6 @@ const App = () => {
   const handleSearchInput = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    console.log("handleSearchSubmit");
     setSearchTerm(event.target.value);
   };
 
@@ -200,6 +199,10 @@ const App = () => {
 
   //------------------------
   const handleLastSearch = (searchTerm: string) => {
+
+    // Set the input text to the search button clicked.
+    // Simple as that...
+    setSearchTerm(searchTerm);
     handleSearch(searchTerm);
   };
 
