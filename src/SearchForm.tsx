@@ -33,21 +33,21 @@ const SearchForm = ({
         <div>
         <form onSubmit={onSearchSubmit} className={styles.searchForm}>
             <InputWithLabel 
-            id="search"
-            value={searchTerm} 
-            isFocused
-            onInputChange={onSearchInput} >
+                id="search"
+                value={searchTerm} 
+                isFocused
+                onInputChange={onSearchInput} >
             
             <LabelText labelText='Search:'></LabelText>
 
             </InputWithLabel>
 
             <button
-            type="submit"
-            disabled={!searchTerm}
-            className={`${styles.button} ${styles.buttonLarge}`}
+                type="submit"
+                disabled={!searchTerm}
+                className={`${styles.button} ${styles.buttonLarge}`}
             >
-            Submit
+                Submit
             </button>
         </form>
         
@@ -98,13 +98,34 @@ const queryString = (url: string) : string => {
 }
 
 //------------------------------
+// Remove duplicates from the last searches.
+//------------------------------
+const removeDuplicates = (data: Array<string>) : Array<string> => {
+    return data.filter((value, index) => data.indexOf(value) === index);
+}
+
+//------------------------------
 // Row of buttons of the last 5 search queries.
 //------------------------------
 const SearchButtons = ({
     urls,
     onLastSearch
     } : SearchButtonsProps ) => {
-     
+    
+    // We want to show the last 5 searches, minus the current search.
+    // The searches should not have any duplicates.  Question is whether when the
+    // last 5 searches are all the same - e.g. seven one one one one one one...
+    // do you show 'seven one' or just 'one'?  Here I've decided to show 'seven one',
+    // meaning, remove the dups and then from that take the last five...
+
+    const getLastSearches = (urls: Array<string>): Array<string> => {
+        const noDuplicates = removeDuplicates(urls);
+        const lastSearches =  noDuplicates.slice(-6, -1).map(queryString);
+        return lastSearches;
+    }
+    
+    const lastSearches: Array<string> = getLastSearches(urls);
+    
     const handleClick = (
         event: React.MouseEvent<HTMLButtonElement>
         ) => {
@@ -121,13 +142,10 @@ const SearchButtons = ({
         <label className={`${styles.labelSearch}`}>Recent Searches: </label>
 
             {
-            
-            urls.slice(-5).map( (url: string, index: number) => {
-
-                const query: string = queryString(url);
+            lastSearches.map( (query: string, index: number) => {
                 
                 return (
-                    index < 5 &&
+                    
                     <React.Fragment key={index + query}>
                         <button
                             value={query}

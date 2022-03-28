@@ -178,3 +178,4 @@ Since List only returns something, we can refactor again to this - notice there 
 19. Segue-way: Medium article on using absolute https://medium.com/geekculture/making-life-easier-with-absolute-imports-react-in-javascript-and-typescript-bbdab8a8a3a1  Seems to work.
 20. Adding the last 5 searches accessible with buttons: I used the buttons as the search and letting the button text show the last search.  The idea is to re-use the 'url' and 'setUrl' states.  The current commit is my solution.  I'll check the instructor's solution next.
 21. My solution nearly follows the instructor's solution, with a few refinements.  See commit differences.
+22. Exercise is to show unique searches on the buttons which also are not to include the current search.  These 2 items are complete.  The last item is to change the input text based on the button click.  I have not seen a way to do this and so I will check the solution.  Moving right along.

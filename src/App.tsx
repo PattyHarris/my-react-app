@@ -185,6 +185,7 @@ const App = () => {
   const handleSearchInput = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
+    console.log("handleSearchSubmit");
     setSearchTerm(event.target.value);
   };
 
