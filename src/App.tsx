@@ -41,9 +41,11 @@ interface StoriesFetchInitAction {
 
 interface StoriesFetchSuccessAction {
   type: 'STORIES_FETCH_SUCCESS';
-  payload: Stories;
-  page: number;
-  numberOfPages: number;
+  payload: {
+    list: Stories;
+    page: number;
+    numberOfPages: number;
+  }
 };
 
 interface StoriesFetchFailureAction {
@@ -105,9 +107,13 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload,
-        page: action.page,
-        numberOfPages: action.numberOfPages,
+        data: 
+          action.payload.page === 0
+          ? action.payload.list
+          : state.data.concat(action.payload.list),
+        
+        page: action.payload.page,
+        numberOfPages: action.payload.numberOfPages,
       };
     case 'STORIES_FETCH_FAILURE':
       return {
@@ -166,11 +172,14 @@ const App = () => {
     try {
     const result = await axios.get( urls[urls.length - 1] );
 
+    console.log("page ", result.data.page, "of pages ", result.data.nbPages)
+
     dispatchStories({
       type: 'STORIES_FETCH_SUCCESS',
-      payload: result.data.hits,
-      page: result.data.page,
-      numberOfPages: result.data.nbPages
+      payload: {
+        list: result.data.hits,
+        page: result.data.page,
+        numberOfPages: result.data.nbPages}
     });
   }
   catch {

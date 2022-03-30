@@ -182,3 +182,4 @@ Since List only returns something, we can refactor again to this - notice there 
 23. To set the search term in the input text, all that is needed is to use 'setSearchTerm' - duh!
 24. Last exercise is to add the ability to page forward in the results.  I wanted to make the 'next page' button align with the search input area - used 'flex'.  The main issue was figuring out why the 'next page' button was sizing up the the flex area - setting margin-bottom to 'auto' fixed this.  
 25. As part of the 'next page' exercise, the components have been refactored into their own files - much cleaner.
+26. Bug as solved in the solution: next page always replaces the current set of data.  What needs to happen is to extend the current data set - see changes to the reducer.
