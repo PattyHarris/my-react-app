@@ -3,10 +3,14 @@ import axios from 'axios';
 
 import styles from './App.module.css';
 
-import List from 'List';
 import SearchForm from 'SearchForm';
+import LastSearches from 'LastSearches';
+import NextPage from 'NextPage';
+
+import List from 'List';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_PAGE = '&page=';
 
 // ====================================
 // Typescript additions
@@ -27,6 +31,8 @@ type StoriesState = {
   data: Stories;
   isLoading: boolean;
   isError: boolean;
+  page: number;
+  numberOfPages: number;
 };
 
 interface StoriesFetchInitAction {
@@ -36,6 +42,8 @@ interface StoriesFetchInitAction {
 interface StoriesFetchSuccessAction {
   type: 'STORIES_FETCH_SUCCESS';
   payload: Stories;
+  page: number;
+  numberOfPages: number;
 };
 
 interface StoriesFetchFailureAction {
@@ -89,14 +97,17 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
       return {
         ...state, 
         isLoading: true,
-        isError: false
+        isError: false,
+        page: 0      
       };
     case 'STORIES_FETCH_SUCCESS':
       return {
         ...state,
         isLoading: false,
         isError: false,
-        data: action.payload
+        data: action.payload,
+        page: action.page,
+        numberOfPages: action.numberOfPages,
       };
     case 'STORIES_FETCH_FAILURE':
       return {
@@ -119,8 +130,8 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
 // ====================================
 
 // Handle last 5 searches.
-const getUrl = (searchTerm: string) => {
-  return `${API_ENDPOINT}${searchTerm}`;
+const getUrl = (searchTerm: string, page: number = 0) => {
+  return `${API_ENDPOINT}${searchTerm}${API_PAGE}${page}`;
 }
 
 // ====================================
@@ -144,7 +155,7 @@ const App = () => {
   //------------------------
   const [stories, dispatchStories] = React.useReducer(
     storiesReducer,
-    { data: [], isLoading: false, isError: false }
+    { data: [], isLoading: false, isError: false, page: 0, numberOfPages: 0 }
   );
 
   //------------------------
@@ -157,7 +168,9 @@ const App = () => {
 
     dispatchStories({
       type: 'STORIES_FETCH_SUCCESS',
-      payload: result.data.hits
+      payload: result.data.hits,
+      page: result.data.page,
+      numberOfPages: result.data.nbPages
     });
   }
   catch {
@@ -207,8 +220,14 @@ const App = () => {
   };
 
   //------------------------
-  const handleSearch = (searchTerm: string) => {
-    const url = getUrl(searchTerm);
+  const handleNextPage = (page: number) => {
+    setSearchTerm(searchTerm);
+    handleSearch(searchTerm, page);
+  }
+
+  //------------------------
+  const handleSearch = (searchTerm: string, page: number = 0) => {
+    const url = getUrl(searchTerm, page);
     setUrls(urls.concat(url));  
   };
 
@@ -218,13 +237,25 @@ const App = () => {
     <div className={styles.container}>
       <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
       
-      <SearchForm 
-        searchTerm={searchTerm}
-        urls={urls}
-        onSearchInput={handleSearchInput}
-        onSearchSubmit={handleSearchSubmit}
-        onLastSearch={handleLastSearch}
-      />
+      <section className={styles.content}>
+      <div className={styles.searchContent}>
+
+        <SearchForm 
+          searchTerm={searchTerm}
+          onSearchInput={handleSearchInput}
+          onSearchSubmit={handleSearchSubmit}
+        />
+
+        <LastSearches urls={urls} onLastSearch={handleLastSearch} />
+        </div>
+
+        <NextPage 
+          searchTerm={searchTerm}
+          page={stories.page} 
+          numberOfPages={stories.numberOfPages} 
+          onNextPage = {handleNextPage}
+          />
+      </section>
 
       {stories.isError && <p>Something went wrong ...</p>}
       {stories.isLoading ? (

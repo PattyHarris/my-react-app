@@ -180,3 +180,5 @@ Since List only returns something, we can refactor again to this - notice there 
 21. My solution nearly follows the instructor's solution, with a few refinements.  See commit differences.
 22. Exercise is to show unique searches on the buttons which also are not to include the current search.  These 2 items are complete.  The last item is to change the input text based on the button click.  I have not seen a way to do this and so I will check the solution.  Moving right along.
 23. To set the search term in the input text, all that is needed is to use 'setSearchTerm' - duh!
+24. Last exercise is to add the ability to page forward in the results.  I wanted to make the 'next page' button align with the search input area - used 'flex'.  The main issue was figuring out why the 'next page' button was sizing up the the flex area - setting margin-bottom to 'auto' fixed this.  
+25. As part of the 'next page' exercise, the components have been refactored into their own files - much cleaner.
