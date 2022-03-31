@@ -136,8 +136,8 @@ const storiesReducer = (state: StoriesState, action: StoriesAction) => {
 // ====================================
 
 // Handle last 5 searches.
-const getUrl = (searchTerm: string, page: number = 0) => {
-  return `${API_ENDPOINT}${searchTerm}${API_PAGE}${page}`;
+const getUrl = (searchTerm: string, page?: number) => {
+  return `${API_ENDPOINT}${searchTerm}${API_PAGE}${page || 0}`;
 }
 
 // ====================================
